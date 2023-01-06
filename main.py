@@ -9,19 +9,31 @@ def main():
     # go to each sub link
     # find company name and website link from the sublink
 
+    values = []
     loop_counter = 0
-    locations = ['vancouver']
-    streams = ['', ]
 
-    base_url = f"https://creativedestructionlab.com/companies/"
+    locations = ['vancouver', 'rockies', 'toronto']
+    streams = ['artificial-intelligence', 'blockchain', 'energy', 'crypto', 'fintech', 'health',
+               'prime', 'quantum', 'supply-chain', 'space']
 
-    # base_url = f"https://creativedestructionlab.com/companies/?location=vancouver"
-    # base_url = f"https://creativedestructionlab.com/companies/?stream={streams[0]}&location={locations[0]}"
+    base_url = "https://creativedestructionlab.com/companies/"
 
     for stream in streams:
+
         for location in locations:
 
-            url = base_url + f"?location={location}"
+            if stream == '' and location == '':
+                url = base_url
+
+            elif stream == '':
+                url = base_url + f"?location={location}"
+
+            elif location == '':
+                url = base_url + f"?stream={stream}"
+
+            elif stream != '' and location != '':
+                url = base_url + f"?stream={stream}&location={location}"
+
             source = requests.get(url).text
 
             soup = BeautifulSoup(source, 'lxml')
@@ -50,6 +62,13 @@ def main():
                     if (company_website is not None) and (company_name is not None):
                         print(
                             f"{company_website['href']} - {company_name.text} - Counter: {loop_counter}\n")
+
+                        values.append(
+                            f"{company_name.text} - {company_website['href']}")
+
+    with open('output.txt', 'w') as f:
+        for item in values:
+            f.write(f"{item}\n")
 
 
 if __name__ == '__main__':
